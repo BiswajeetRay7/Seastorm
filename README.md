@@ -54,10 +54,21 @@ Each scan is accompanied by a visually structured HTML report, countdown timers,
 Run the following to install all dependencies:
 
 ```bash
+# 1. Clone the Seastorm repository
 git clone https://github.com/BiswajeetRay7/seastorm
+
+# 2. Enter the project directory
 cd seastorm
+
+# 3. Make the script executable
 chmod +x seastorm.sh
+
+# 4. Install all required dependencies (Go, Python tools, and repos)
 ./seastorm.sh --install
+
+# 5. (Optional) Make it globally accessible from anywhere on your system
+sudo cp seastorm.sh /usr/local/bin/seastorm
+sudo chmod +x /usr/local/bin/seastorm
 ```
 
 This command installs the following tools:
