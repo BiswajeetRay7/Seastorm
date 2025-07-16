@@ -2,7 +2,7 @@
 
 # ─────────────────────────────────────────────────────────────
 # Seastorm - A tool dedicated to my VS7 ❤️
-# Nuclei Automation Fuzzer | Ocean & Star Themed
+# AI-Inspired Nuclei Automation Fuzzer | Ocean & Star Themed
 # Author: Biswajeet Ray | https://github.com/BiswajeetRay7
 # Dependencies: gau, gauplus, waybackurls, hakrawler, katana, uro, httpx, nuclei, python3, ParamSpider, urlfinder
 # Templates Used: https://github.com/projectdiscovery/fuzzing-templates
@@ -20,28 +20,25 @@ BOLD='\033[1m'
 spin() {
   sp=("🌊" "✨" "🌟" "🌌" "💫" "⭐")
   sc=0
-  printf "[s"
+  printf "\033[s"
   while :; do
-    printf "[u${sp[sc++]} "
+    printf "\033[u${sp[sc++]} "
     ((sc==${#sp[@]})) && sc=0
     sleep 0.15
   done
 }
 start_spinner() { spin & SPIN_PID=$!; disown; }
-stop_spinner() { kill "$SPIN_PID" &>/dev/null; wait "$SPIN_PID" 2>/dev/null; printf "
-"; }
+stop_spinner() { kill "$SPIN_PID" &>/dev/null; wait "$SPIN_PID" 2>/dev/null; printf "\n"; }
 
 # ───── Countdown ─────
 countdown_timer() {
   secs=$1
   while [ $secs -gt 0 ]; do
-    echo -ne "${YELLOW}⏳ Countdown: $secs seconds remaining...
-${RESET}"
+    echo -ne "${YELLOW}⏳ Countdown: $secs seconds remaining...\r${RESET}"
     sleep 1
     : $((secs--))
   done
-  echo -ne "
-"
+  echo -ne "\n"
 }
 
 ascii_banner() {
@@ -147,11 +144,9 @@ collect_urls() {
   input=$( [[ -n "$SINGLE_DOMAIN" ]] && echo "$SINGLE_DOMAIN" || cat "$TARGET_FILE" )
   while IFS= read -r domain; do
     echo -e "${YELLOW}🔎 Collecting for: $domain${RESET}"
-    # Suppress gau errors and filter out unwanted error messages
     echo "$domain" | gau 2>&1 | grep -v 'Error parsing URL' >> "$RAW_URLS.tmp"
     echo "$domain" | waybackurls 2>/dev/null >> "$RAW_URLS.tmp"
     echo "$domain" | hakrawler 2>/dev/null >> "$RAW_URLS.tmp"
-    # Skipping katana and urlfinder silently (no message)
     python3 "$HOME/ParamSpider/paramspider.py" -d "$domain" >> "$RAW_URLS.tmp" 2>/dev/null
   done <<< "$input"
   cat "$RAW_URLS.tmp" | uro | sort -u > "$FILTERED_URLS"
@@ -166,7 +161,7 @@ run_nuclei() {
   start_time=$(date +%s)
   countdown_timer 5
   start_spinner
-  nuclei -l "$FILTERED_URLS" -t "$TEMPLATE_DIR" -dast -rl "$RATE_LIMIT" -c "$CONCURRENCY" | tee "$RESULTS_FILE"
+  nuclei -l "$FILTERED_URLS" -t "$TEMPLATE_DIR" -rl "$RATE_LIMIT" -c "$CONCURRENCY" | tee "$RESULTS_FILE"
   stop_spinner
   end_time=$(date +%s)
   duration=$((end_time - start_time))
